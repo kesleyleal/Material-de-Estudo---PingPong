@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+
+    <canvas id="folha" width="600" height="600"></canvas>
+
+    <script>
+        window.onload = function () {
+            variaveis();
+            setInterval(primario, 1000 / 60);
+        }
+
+        function variaveis() {
+            folhaDesenho = document.getElementById("folha");
+            areaDesenho = folhaDesenho.getContext("2d");
+
+            larguraCampo = 600;
+            alturaCampo = 500;
+            larguraLinha = 5;
+            larguraBola = 7;
+            alturaBola = 7;
+            alturaBase = 100;
+            larguraRebatedor = 5;
+
+            efeitoRebatedor = 0.3;
+            velocidadeJogador2 = 5;
+
+            posicaoJogador1 = posicaoJogador2 = 50;
+
+            posicaoBolaX = posicaoBolaY = 10;
+            velocidadeBolaPosicaoX = velocidadeBolaPosicaoY = 3;
+
+            pontuacaoJogador1 = pontuacaoJogador2 = 0;
+
+            folhaDesenho.addEventListener('mousemove', function (e) {
+                posicaoJogador1 = e.clientY - alturaBase / 2;
+            });
+        }
+
+        function primario() {
+            desenho();
+            movimento();
+        }
+
+        function desenho() {
+            areaDesenho.fillStyle = '#691716';
+            areaDesenho.fillRect(0, 0, larguraCampo, alturaCampo);
+
+            areaDesenho.fillStyle = '#ffffff'
+            //Linha Meio
+            areaDesenho.fillRect(larguraCampo / 2 - larguraLinha / 2, 0, larguraLinha, alturaCampo);
+            //Esquerda
+            areaDesenho.fillRect(0, posicaoJogador1, larguraRebatedor, alturaBase);
+            //Direita
+            areaDesenho.fillRect(larguraCampo - larguraRebatedor, posicaoJogador2, larguraRebatedor, alturaBase);
+            //Bola
+            areaDesenho.fillRect(posicaoBolaX - larguraBola / 2, posicaoBolaY - larguraBola / 2, larguraBola, alturaBola);
+            //Pontuacao
+            areaDesenho.fillText("Humano -" + pontuacaoJogador1 + "pontos", 100, 100);
+            areaDesenho.fillText("Maquina -" + pontuacaoJogador2 + "pontos", larguraCampo - 200, 100);
+
+        }
+
+        function movimento() {
+
+            posicaoBolaX = posicaoBolaX + velocidadeBolaPosicaoX;
+            posicaoBolaY = posicaoBolaY + velocidadeBolaPosicaoY;
+
+            //Rebatidas laterais
+            if (posicaoBolaY < 0 && velocidadeBolaPosicaoY < 0) {
+                velocidadeBolaPosicaoY = -velocidadeBolaPosicaoY;
+            }
+
+            if (posicaoBolaY > alturaCampo && velocidadeBolaPosicaoY > 0) {
+                velocidadeBolaPosicaoY = -velocidadeBolaPosicaoY;
+            }
+
+            //Rebatidas rebatedores(2)
+            if (posicaoBolaX < 0) {
+                if (posicaoBolaY > posicaoJogador1 && posicaoBolaY < posicaoJogador1 + alturaBase) {
+                    velocidadeBolaPosicaoX = -velocidadeBolaPosicaoX;
+
+                    var diferencaY = posicaoBolaY - (posicaoJogador1 + alturaBase / 2);
+                    velocidadeBolaPosicaoY = diferencaY * efeitoRebatedor;
+                } else {
+                    pontuacaoJogador2 = pontuacaoJogador2 + 1;
+
+                    reiniciarJogo();
+
+                }
+            }
+            //Rebatidas rebatedores(1)
+            if (posicaoBolaX > larguraCampo) {
+                if (posicaoBolaY > posicaoJogador2 && posicaoBolaY < posicaoJogador2 + alturaBase) {
+                    velocidadeBolaPosicaoX = -velocidadeBolaPosicaoX;
+
+                    var diferencaY = posicaoBolaY - (posicaoJogador2 + alturaBase / 2);
+                    velocidadeBolaPosicaoY = diferencaY * efeitoRebatedor;
+                } else {
+                    pontuacaoJogador1 = pontuacaoJogador1 + 1;
+
+                    reiniciarJogo();
+                }
+            }
+            //movimentação maquina
+            if (posicaoJogador2 + alturaBase / 2 < posicaoBolaY) {
+                posicaoJogador2 = posicaoJogador2 + velocidadeJogador2;
+            } else {
+                posicaoJogador2 = posicaoJogador2 - velocidadeJogador2;
+            }
+        }
+
+        function reiniciarJogo() {
+            posicaoBolaX = larguraCampo / 2;
+            posicaoBolaY = alturaCampo / 2;
+            velocidadeBolaPosicaoX = -velocidadeBolaPosicaoX;
+            velocidadeBolaPosicaoY = 3;
+        }
+    </script>
+
+</body>
+
+</html>
+
+
+
+<!-- 
+Material de Estudo
+Kesley Leal.
+-->
